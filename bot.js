@@ -1,22 +1,3 @@
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-           ______     ______     ______   __  __     __     ______
-          /\  == \   /\  __ \   /\__  _\ /\ \/ /    /\ \   /\__  _\
-          \ \  __<   \ \ \/\ \  \/_/\ \/ \ \  _"-.  \ \ \  \/_/\ \/
-           \ \_____\  \ \_____\    \ \_\  \ \_\ \_\  \ \_\    \ \_\
-            \/_____/   \/_____/     \/_/   \/_/\/_/   \/_/     \/_/
-
-
-This is a sample Facebook bot built with Botkit.
-
-# RUN THE BOT:
-  Follow the instructions here to set up your Facebook app and page:
-    -> https://developers.facebook.com/docs/messenger-platform/implementation
-  Run your bot from the command line:
-    page_token=<MY PAGE TOKEN> verify_token=<MY_VERIFY_TOKEN> node bot.js
-
-
-
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 var env = require('node-env-file');
 env(__dirname + '/.env');
 
@@ -48,18 +29,20 @@ var controller = Botkit.facebookbot({
 // Set up an Express-powered webserver to expose oauth and webhook endpoints
 var webserver = require(__dirname + '/components/express_webserver.js')(controller);
 
+require(__dirname + '/helpers/mongoDB/mongoDB.js');
+require(__dirname + '/scripts/identify_user.js')(controller);
 // Tell Facebook to start sending events to this application
 require(__dirname + '/components/subscribe_events.js')(controller);
 
 // Set up Facebook "thread settings" such as get started button, persistent menu
 require(__dirname + '/components/thread_settings.js')(controller);
 
-
 // Send an onboarding message when a user activates the bot
 require(__dirname + '/components/onboarding.js')(controller);
 
 // Load in some helpers that make running Botkit on Glitch.com better
 require(__dirname + '/components/plugin_glitch.js')(controller);
+
 
 var normalizedPath = require("path").join(__dirname, "skills");
 require("fs").readdirSync(normalizedPath).forEach(function(file) {
